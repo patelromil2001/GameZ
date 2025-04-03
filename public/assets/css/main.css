@@ -1,0 +1,84 @@
+/* Navbar Styles */
+nav {
+  background-color: #343a40;
+  padding: 15px 20px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li {
+  display: flex;
+  align-items: center;
+}
+
+nav ul li img {
+  height: 40px;
+  margin-right: 10px;
+}
+
+nav ul li h3 {
+  color: #fff;
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+nav ul li a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #f8f9fa;
+  padding: 10px 15px;
+  border-radius: 5px;
+  transition: background 0.3s ease;
+}
+
+nav ul li a:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* Hero Section */
+.hero {
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: #34495e;
+  color: white;
+  padding: 20px;
+}
+
+.hero h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+
+.hero p {
+  font-size: 1.2em;
+  margin-bottom: 20px;
+}
+
+/* CTA Button */
+.btn {
+  display: inline-block;
+  background: #e74c3c;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  font-size: 1.2em;
+  border-radius: 5px;
+  transition: background 0.3s ease-in-out;
+}
+
+.btn:hover {
+  background: #c0392b;
+}
