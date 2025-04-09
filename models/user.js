@@ -1,26 +1,26 @@
-// user model for for user 
-
+// DEVWRAT RAVAL 
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 const bcrypt = require('bcryptjs');
 
-const UserSchema = new Schema({
-  username: {
+const UserSchema = new mongoose.Schema({
+  name: {
     type: String,
     required: true,
-    unique: true
+    trim: true
   },
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    trim: true,
+    lowercase: true
   },
   password: {
     type: String,
     required: true
   },
   wishlist: [{
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Game'
   }],
   createdAt: {
@@ -29,9 +29,25 @@ const UserSchema = new Schema({
   }
 });
 
-// Method to compare passwords
-UserSchema.methods.comparePassword = async function(candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
+// Hash password before saving
+UserSchema.pre('save', async function(next) {
+  // Only hash if password is modified
+  if (!this.isModified('password')) {
+    return next();
+  }
+  
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Compare entered password with stored hashed password
+UserSchema.methods.matchPassword = async function(enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
 };
 
 module.exports = mongoose.model('User', UserSchema);

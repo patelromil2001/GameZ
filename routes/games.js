@@ -1,37 +1,39 @@
-// game catalog and wishlist routers
 const express = require('express');
 const router = express.Router();
 const Game = require('../models/Game');
-const sortingMiddleware = require('../middleware/sorting');
-const { isAuthenticated } = require('../middleware/auth');
 
-// Apply sorting middleware to all game routes
-router.use(sortingMiddleware);
 
-// Game catalog with sorting (pagination can be added)
-router.get('/', async (req, res) => {
-  try {
-    // Build query based on filters 
-    let query = {};
 
-    // Use the sort criteria from the sorting middleware
-    const sortCriteria = req.sortCriteria;
-
-    // Execute query with sorting only (pagination can be added)
-    const games = await Game.find(query)
-      .sort(sortCriteria)
-      .lean();
-
-    res.render('games/index', {
-      title: 'Game Catalog',
-      games,
-      // pagination-related variables can be added 
-    });
-  } catch (err) {
-    console.error(err);
-    req.flash('error_msg', 'Error loading game catalog');
-    res.redirect('/');
-  }
-});
+// VAISAKH  - Pagination for game catalog
+router.get('/games/page/:page', async (req, res) => {
+  try { // DEVWRAT RAVAL
+    if (req.query.sort) {
+      switch (req.query.sort) {
+        case 'name_asc':
+          sortOption = { name: 1 };
+          break;
+        case 'name_desc':
+          sortOption = { name: -1 };
+          break;
+        case 'price_asc':
+          sortOption = { price: 1 };
+          break;
+        case 'price_desc':
+          sortOption = { price: -1 };
+          break;
+        case 'date_asc':
+          sortOption = { release_date: 1 };
+          break;
+        case 'date_desc':
+          sortOption = { release_date: -1 };
+          break;
+        case 'rating_desc':
+          // We'll need custom handling for this since it's a virtual
+          break;
+        default:
+          sortOption = { name: 1 };
+      }
+    }
+  }})
 
 module.exports = router;
