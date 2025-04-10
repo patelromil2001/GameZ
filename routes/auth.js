@@ -1,148 +1,111 @@
-// DEVWRAT RAVAL - Authentication Routes (User Registration, Login/Logout & Session Management)
 const express = require('express');
 const router = express.Router();
-const User = require('../models/user');
-const { ensureAuth, ensureGuest } = require('../middleware/auth');
+const bcrypt = require('bcrypt');
+const User = require('../models/User'); 
 
-// Show Register Page
-router.get('/register', ensureGuest, (req, res) => {
-  res.render('register', {
-    title: 'Register'
-  });
-});
-
-// Process Register
-router.post('/register', ensureGuest, async (req, res) => {
+// Register Route - Process Registration
+router.post('/register', async (req, res) => {
   try {
+    console.log('Registering user:', req.body);
     const { name, email, password, password2 } = req.body;
-    
-    // Validation
+
     let errors = [];
-    
+
     if (!name || !email || !password || !password2) {
-      errors.push({ msg: 'Please fill in all fields' });
+      errors.push('Please fill in all fields');
     }
-    
+
     if (password !== password2) {
-      errors.push({ msg: 'Passwords do not match' });
+      errors.push('Passwords do not match');
     }
-    
+
     if (password.length < 6) {
-      errors.push({ msg: 'Password should be at least 6 characters' });
+      errors.push('Password should be at least 6 characters');
     }
-    
+
     if (errors.length > 0) {
-      return res.render('register', {
-        title: 'Register',
-        errors,
-        name,
-        email
-      });
+      console.log('Validation errors:', errors);
+      return res.status(400).json({ errors });
     }
-    
-    // Check if user exists
+
     const userExists = await User.findOne({ email });
-    
     if (userExists) {
-      errors.push({ msg: 'Email is already registered' });
-      return res.render('register', {
-        title: 'Register',
-        errors,
-        name,
-        email
-      });
+      return res.status(409).json({ error: 'Email is already registered' });
     }
-    
-    // Create new user
-    const newUser = new User({
-      name,
-      email,
-      password
-    });
-    
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({ name, email, password: hashedPassword });
     await newUser.save();
-    
-    req.session.success_msg = 'You are now registered and can log in';
-    res.redirect('/auth/login');
-  } catch (err) {
-    console.error(err);
-    res.render('error', {
-      title: 'Server Error',
-      message: 'Something went wrong. Please try again.'
-    });
+
+    console.log('User registered successfully:', newUser);
+    res.status(201).json({ message: 'User registered successfully', user: { id: newUser._id, name: newUser.name, email: newUser.email } });
+  } catch (error) {
+    console.error('Error during registration:', error);
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
-// Show Login Page
-router.get('/login', ensureGuest, (req, res) => {
-  res.render('login', {
-    title: 'Login'
-  });
-});
-
-// Process Login
-router.post('/login', ensureGuest, async (req, res) => {
+// Login Route - Process Login (with validation)
+router.post('/login', async (req, res) => {
   try {
+    console.log('Login request received:', req.body);
     const { email, password } = req.body;
-    
-    // Validation
+
+    // Validate input fields
     if (!email || !password) {
-      return res.render('login', {
-        title: 'Login',
-        errors: [{ msg: 'Please fill in all fields' }],
-        email
-      });
+      console.log('Missing email or password in login request');
+      return res.status(400).json({ error: 'Please provide both email and password' });
     }
-    
-    // Find user by email
+
+    // Check if user exists
     const user = await User.findOne({ email });
-    
     if (!user) {
-      return res.render('login', {
-        title: 'Login',
-        errors: [{ msg: 'Invalid credentials' }],
-        email
-      });
+      console.log(`User not found with email: ${email}`);
+      return res.status(404).json({ error: 'User not found' });
     }
+    console.log('Provided password:', password);
+    console.log('Stored hashed password:', user.password);
     
-    // Match password
-    const isMatch = await user.matchPassword(password);
-    
+    // verify password
+    const isMatch = await bcrypt.compare(password, user.password);
+    console.log('Password match result:', isMatch);
     if (!isMatch) {
-      return res.render('login', {
-        title: 'Login',
-        errors: [{ msg: 'Invalid credentials' }],
-        email
-      });
+      console.log(`Invalid credentials for email: ${email}`);
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
-    
-    // Create session
+
+    // Create session for the user
     req.session.user = {
       id: user._id,
       name: user.name,
-      email: user.email
+      email: user.email,
     };
-    
-    const returnTo = req.session.returnTo || '/';
-    delete req.session.returnTo;
-    
-    res.redirect(returnTo);
-  } catch (err) {
-    console.error(err);
-    res.render('error', {
-      title: 'Server Error',
-      message: 'Something went wrong. Please try again.'
-    });
+
+    req.session.userId = user._id; 
+
+    console.log('User logged in successfully:', req.session.user);
+    res.status(200).json({ message: 'Logged in successfully', user: req.session.user });
+  } catch (error) {
+    console.error('Error during login:', error);
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
-// Logout
-router.get('/logout', ensureAuth, (req, res) => {
+// Logout Route - Destroy Session
+router.get('/logout', (req, res) => {
+  if (!req.session.user) {
+    console.log('Logout attempt without being logged in');
+    return res.status(401).json({ error: 'You are not logged in' });
+  }
+
   req.session.destroy((err) => {
     if (err) {
-      console.error(err);
+      console.error('Error during logout:', err);
+      return res.status(500).json({ error: 'Failed to log out' });
     }
-    res.redirect('/');
+
+    console.log('User logged out successfully');
+    res.status(200).json({ message: 'Logged out successfully' });
   });
 });
 
