@@ -33,44 +33,28 @@ router.get('/', async (req, res) => {
 router.get('/games/:id', async (req, res) => {
   try {
     const game = await Game.findById(req.params.id);
-    
+
     if (!game) {
       return res.status(404).json({
         success: false,
-        message: 'Game not found'
+        message: 'Game not found',
       });
     }
-    
-    // Get similar games based on genre
-    const similarGames = await Game.find({
-      _id: { $ne: game._id },
-      genres: { $in: game.genres }
-    }).limit(6);
-    
-    // Check if game is in user's wishlist
-    let inWishlist = false;
-    if (req.session.user) {
-      const User = require('../models/User');
-      const user = await User.findById(req.session.user.id);
-      inWishlist = user.wishlist.includes(game._id);
-    }
-    
+
     res.status(200).json({
       success: true,
-      message: 'Game details fetched successfully',
       game,
-      similarGames,
-      inWishlist
     });
   } catch (err) {
     console.error(err);
     res.status(500).json({
       success: false,
       message: 'Failed to load game details',
-      error: err.message
+      error: err.message,
     });
   }
 });
+
 
 // VAISAKH  - Pagination for game catalog
 router.get('/games/page/:page', async (req, res) => {

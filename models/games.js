@@ -20,6 +20,10 @@ const GameSchema = new mongoose.Schema({
     type: [String],
     default: []
   },
+  categories: {
+    type: [String],
+    default: []
+  },
   developer: {
     type: String
   },
