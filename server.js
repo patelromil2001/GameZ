@@ -2,11 +2,13 @@
 const express = require('express');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
-const path = require('path');
 const morgan = require('morgan');
 const methodOverride = require('method-override');
 const connectDB = require('./config/db');
+const bodyParser = require('body-parser');
+
 require('dotenv').config();
+
 
 // Initialize app
 const app = express();
@@ -15,17 +17,12 @@ const app = express();
 connectDB();
 
 // Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(methodOverride('_method'));
-app.use(morgan('dev'));
+app.use(express.json()); // Parse JSON bodies
+app.use(express.urlencoded({ extended: false })); // Parse URL-encoded bodies
+app.use(methodOverride('_method')); // For HTTP method overrides
+app.use(morgan('dev')); // Logging HTTP requests
+app.use(bodyParser.json());
 
-// EJS setup
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-
-// Static folder
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Session middleware
 app.use(
@@ -34,26 +31,30 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
-    cookie: { maxAge: 60 * 60 * 1000 } // 1 hour
+    cookie: { maxAge: 60 * 60 * 1000 } // Sessions last for 1 hour
   })
 );
 
-// Set global variables
+// Global variables middleware
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   next();
 });
 
 // Routes
-app.use('/', require('./routes/games'));
-app.use('/auth', require('./routes/auth'));
-app.use('/wishlist', require('./routes/wishlist'));
+app.use('/auth', require('./routes/auth')); // Authentication routes
+app.use('/wishlist', require('./routes/wishlist')); // Wishlist routes
+app.use('/games', require('./routes/games')); // Game-related routes
+app.use('/search', require('./routes/search')); // Search routes
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).render('404', { title: 'Page Not Found' });
+  res.status(404).json({ error: 'Page Not Found' });
 });
 
-// Server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Server setup
+const PORT = process.env.PORT || 8000;
+const HOST = process.env.HOST || 'localhost';
+app.listen(PORT, () => {
+  console.log(`Server running on http://${HOST}:${PORT}`);
+});

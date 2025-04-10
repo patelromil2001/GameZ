@@ -1,22 +1,17 @@
 {
-  "name": "project",
+  "name": "gamez-devwrat---copy",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "nodemon server.js"
   },
-  "keywords": [],
-  "author": "",
+  "author": "Riya Chawla",
   "license": "ISC",
   "description": "",
-  "devDependencies": {
-    "nodemon": "^3.1.9",
-    "tailwindcss": "^4.1.2"
-  },
   "dependencies": {
     "bcryptjs": "^3.0.2",
-    "cookie-parser": "^1.4.7",
+    "connect-mongo": "^5.1.0",
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
@@ -24,6 +19,10 @@
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
     "method-override": "^3.0.0",
-    "mongoose": "^8.13.1"
+    "mongodb": "^6.15.0",
+    "mongoose": "^8.13.2",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.1.9",
+    "path": "^0.12.7"
   }
 }
