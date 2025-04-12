@@ -1,19 +1,22 @@
 const jwt = require("jsonwebtoken");
-require("dotenv").config();
 
-module.exports = (req, res, next) => {
-  const token = req.header("Authorization");
-  if (!token) return res.status(401).json({ error: "Access denied. No token provided." });
+const authenticateUser = (req, res, next) => {
+  const token = req.cookies.token;
 
-  // Extract the token by splitting 'Bearer <token>'
-  const bearerToken = token.split(" ")[1]; // Get token part after "Bearer"
-  if (!bearerToken) return res.status(401).json({ error: "Access denied. No token provided." });
+  // If token is missing, redirect to login page
+  if (!token) {
+    return res.redirect("/auth/loginpage");
+  }
 
   try {
-    const decoded = jwt.verify(bearerToken, process.env.JWT_SECRET);
-    req.userId = decoded.userId;
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // Attach decoded user info to request
     next();
-  } catch (error) {
-    res.status(403).json({ error: "Invalid token." });
+  } catch (err) {
+    // If token is invalid or expired
+    return res.redirect("/auth/loginpage");
   }
 };
+
+module.exports = authenticateUser;

@@ -1,0 +1,111 @@
+body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9f9f9;
+  }
+  
+  .container {
+    display: flex;
+    height: 83vh;
+  }
+  
+  /* Sidebar */
+  .sidebar {
+    width: 220px;
+    background-color: #20232a;
+    color: #fff;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .profile-icon {
+    font-size: 48px;
+    margin-bottom: 30px;
+  }
+  
+  .sidebar nav {
+    width: 100%;
+  }
+  
+  .sidebar a {
+    display: block;
+    color: #fff;
+    text-decoration: none;
+    padding: 12px;
+    margin: 6px 0;
+    border-bottom: 1px solid #333;
+    transition: background-color 0.2s;
+  }
+  
+  .sidebar a:hover {
+    background-color: #333;
+  }
+  
+  /* Main Content */
+  .main-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  
+  .banner {
+    height: 90px;
+    background-color: #e0e0e0;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    margin-bottom: 30px;
+  }
+  
+  .game-section {
+    margin-bottom: 30px;
+  }
+  
+  .game-section h2 {
+    margin-bottom: 10px;
+    font-size: 20px;
+  }
+  
+  .game-cards {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  
+  .card {
+    width: 80px;
+    height: 100px;
+    border-radius: 8px;
+  }
+  
+  .card.red {
+    background-color: #f28b82;
+  }
+  .card.green {
+    background-color: #81c995;
+  }
+  .card.blue {
+    background-color: #aecbfa;
+  }
+  .card.more {
+    background-color: #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+  }
+
+  button{
+    background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+  }
+  
