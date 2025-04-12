@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= game.name %></title>
+    <link rel="stylesheet" href="/assets/css/singleGame.css" />
+  </head>
+  <body>
+    <div class="game-container">
+      <img
+        class="header-img"
+        src="<%= game.header_image %>"
+        alt="<%= game.name %> Header"
+      />
+      <h1><%= game.name %></h1>
+      <p>
+        <strong>Released:</strong> <%= new
+        Date(game.release_date).toDateString() %>
+      </p>
+      <p><strong>Price:</strong> $<%= game.price %></p>
+      <p>
+        <strong>Metacritic Score:</strong> <%= game.metacritic_score %> <% if
+        (game.metacritic_url) { %> (<a
+          href="<%= game.metacritic_url %>"
+          target="_blank"
+          >View</a
+        >) <% } %>
+      </p>
+
+      <div class="section">
+        <h3>Short Description</h3>
+        <p><%= game.short_description %></p>
+      </div>
+
+      <div class="section">
+        <h3>About the Game</h3>
+        <p><%= game.about_the_game %></p>
+      </div>
+
+      <div class="section info-grid">
+        <div>
+          <h4>Platforms</h4>
+          <ul>
+            <% if (game.windows) { %>
+            <li>Windows</li>
+            <% } %> <% if (game.mac) { %>
+            <li>Mac</li>
+            <% } %> <% if (game.linux) { %>
+            <li>Linux</li>
+            <% } %>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Languages</h4>
+          <ul>
+            <% game.supported_languages.forEach(lang => { %>
+            <li><%= lang %></li>
+            <% }) %>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Genres</h4>
+          <ul>
+            <% game.genres.forEach(genre => { %>
+            <li><%= genre %></li>
+            <% }) %>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Developers</h4>
+          <ul>
+            <% game.developers.forEach(dev => { %>
+            <li><%= dev %></li>
+            <% }) %>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Publishers</h4>
+          <ul>
+            <% game.publishers.forEach(pub => { %>
+            <li><%= pub %></li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>
+
+      <% if (game.notes) { %>
+      <div class="section">
+        <h3>Notes</h3>
+        <p><%= game.notes %></p>
+      </div>
+      <% } %> <% if (game.website) { %>
+      <div class="section">
+        <h3>Official Website</h3>
+        <a href="<%= game.website %>" target="_blank"><%= game.website %></a>
+      </div>
+      <% } %>
+    </div>
+  </body>
+</html>
