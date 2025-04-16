@@ -1,111 +1,170 @@
-body {
-    margin: 0;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f9f9f9;
-  }
-  
-  .container {
-    display: flex;
-    height: 83vh;
-  }
-  
-  /* Sidebar */
-  .sidebar {
-    width: 220px;
-    background-color: #20232a;
-    color: #fff;
-    padding: 30px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .profile-icon {
-    font-size: 48px;
-    margin-bottom: 30px;
-  }
-  
-  .sidebar nav {
-    width: 100%;
-  }
-  
-  .sidebar a {
-    display: block;
-    color: #fff;
-    text-decoration: none;
-    padding: 12px;
-    margin: 6px 0;
-    border-bottom: 1px solid #333;
-    transition: background-color 0.2s;
-  }
-  
-  .sidebar a:hover {
-    background-color: #333;
-  }
-  
-  /* Main Content */
-  .main-content {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-  }
-  
-  .banner {
-    height: 90px;
-    background-color: #e0e0e0;
-    border-radius: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 28px;
-    margin-bottom: 30px;
-  }
-  
-  .game-section {
-    margin-bottom: 30px;
-  }
-  
-  .game-section h2 {
-    margin-bottom: 10px;
-    font-size: 20px;
-  }
-  
-  .game-cards {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-  }
-  
-  .card {
-    width: 80px;
-    height: 100px;
-    border-radius: 8px;
-  }
-  
-  .card.red {
-    background-color: #f28b82;
-  }
-  .card.green {
-    background-color: #81c995;
-  }
-  .card.blue {
-    background-color: #aecbfa;
-  }
-  .card.more {
-    background-color: #ddd;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-  }
+/* ===========================
+   RESET & BASE
+=========================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-  button{
-    background: none;
-	color: inherit;
-	border: none;
-	padding: 0;
-	font: inherit;
-	cursor: pointer;
-	outline: inherit;
-  }
-  
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+}
+
+/* ===========================
+   SIDEBAR
+=========================== */
+.sidebar {
+  position: fixed;
+  left: 0; 
+  top: 0; 
+  bottom: 0;
+  width: 220px;
+  background-color: #1e1e2f;
+  color: #fff;
+  padding: 20px;
+}
+.profile-icon {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.sidebar nav a,
+.sidebar form button {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin: 6px 0;
+  color: #fff;
+  background: none;
+  border: none;
+  text-decoration: none;
+  text-align: left;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.sidebar nav a:hover,
+.sidebar form button:hover {
+  background-color: #333;
+}
+
+/* ===========================
+   MAIN CONTENT
+=========================== */
+.main-content {
+  margin-left: 220px; /* to avoid overlap with the sidebar */
+  padding: 40px;
+  min-height: 100vh;
+  background-color: #fff;
+  overflow-y: auto;
+}
+
+/* ===========================
+   HEADER / BANNER
+=========================== */
+.dashboard-banner {
+  background: #3d7bfd;
+  color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+/* ===========================
+   PAGE: allGames.ejs
+=========================== */
+.catalogue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.catalogue-header h2 {
+  font-size: 1.6rem;
+}
+
+/* Grid for the game cards */
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+/* Single game card */
+.game-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+.game-card:hover {
+  transform: scale(1.03);
+}
+.game-card a {
+  text-decoration: none;
+  color: inherit;
+}
+.game-img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.game-card h3 {
+  color: #333;
+  margin-bottom: 5px;
+}
+.game-card p {
+  color: #3d7bfd;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* ===========================
+   PAGINATION
+=========================== */
+.pagination {
+  margin-top: 20px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Regular page links + ellipses + active states */
+.pagination a,
+.pagination span {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #333;
+  transition: background 0.3s;
+}
+
+.pagination a:hover {
+  background-color: #3d7bfd;
+  color: #fff;
+  border-color: #3d7bfd;
+}
+
+/* Current page highlight */
+.pagination .active {
+  background-color: #3d7bfd;
+  color: #fff;
+  border-color: #3d7bfd;
+}
+
+/* Ellipsis style */
+.ellipsis {
+  display: inline-block;
+}
+

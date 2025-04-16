@@ -1,1 +1,30 @@
-gamedetails page
+<div class="game-details-container">
+    <div class="game-header">
+      <h1><%= game.name %></h1>
+      <p>$<%= game.price %></p>
+    </div>
+  
+    <img
+      src="<%= game.header_image || '/assets/images/default_game.jpg' %>"
+      alt="<%= game.name %>"
+      class="game-img-large"
+    />
+  
+    <div class="game-info">
+      <h3>About the Game</h3>
+      <p><%= game.about_the_game %></p>
+  
+      <h4>Genres</h4>
+      <ul>
+        <% game.genres.forEach(g => { %>
+          <li><%= g %></li>
+        <% }) %>
+      </ul>
+  
+      <h4>Release Date</h4>
+      <p><%= game.release_date ? game.release_date.toDateString() : 'N/A' %></p>
+  
+      <!-- Add more fields as needed -->
+    </div>
+  </div>
+  

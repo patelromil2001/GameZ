@@ -1,0 +1,42 @@
+<div class="container">
+    <div class="sidebar">
+      <div class="profile-icon">
+        <i class="fas fa-user-circle"></i>
+      </div>
+      <nav>
+        <a href="/home">Home</a>
+        <a href="/games/all-games">Games</a>
+        <a href="/games/find">Find Games</a>
+        <a href="/wishlist">Wishlist</a>
+        <form action="/auth/logout" method="POST">
+          <button type="submit">Logout</button>
+        </form>
+      </nav>
+    </div>
+    
+    <div class="main-content">
+      <div class="catalogue-container">
+        <div class="catalogue-header">
+          <h1>Search Results for "<%= query %>"</h1>
+          <a href="/games/find" class="btn">New Search</a>
+        </div>
+        
+        <% if (games.length === 0) { %>
+          <div class="no-results">
+            <p>No games found matching your criteria. Please try a different search.</p>
+          </div>
+        <% } else { %>
+          <div class="games-grid">
+            <% games.forEach(game => { %>
+              <a href="/games/game/<%= game._id %>">
+                <div class="game-card">
+                  <img src="<%= game.header_image || '/assets/images/placeholder.png' %>" alt="<%= game.name %>" class="game-image">
+                  <h3 class="game-title"><%= game.name %></h3>
+                </div>
+              </a>
+            <% }); %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>

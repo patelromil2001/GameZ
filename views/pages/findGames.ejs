@@ -1,0 +1,36 @@
+<div class="search-container">
+    <h2>Find Games</h2>
+    <form action="/search/find" method="get" class="search-form">
+      <input
+        type="text"
+        name="query"
+        placeholder="Enter game name"
+        value="<%= query || '' %>"
+      />
+      <button type="submit">Search</button>
+    </form>
+  </div>
+  
+  <!-- If we have search results -->
+  <% if (searchResults && searchResults.length > 0) { %>
+    <h3>Search Results</h3>
+    <div class="game-grid">
+      <% searchResults.forEach(game => { %>
+        <div class="game-card">
+          <a href="/games/game/<%= game._id %>">
+            <img
+              src="<%= game.header_image || '/assets/images/default_game.jpg' %>"
+              alt="<%= game.name %>"
+              class="game-img"
+            />
+            <h3><%= game.name %></h3>
+            <p>$<%= game.price %></p>
+          </a>
+        </div>
+      <% }) %>
+    </div>
+  <% } else if (query) { %>
+    <!-- If user searched but no results -->
+    <p>No games found for "<%= query %>".</p>
+  <% } %>
+  

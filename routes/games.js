@@ -39,7 +39,7 @@ router.get("/all-games", auth, async (req, res) => {
 
     let filter = {};
 
-    // Filter by genres - using regex cuz data is 'string' inside [array] inside "string"
+    // Filter by genres - using regex
     if (req.query.genres) {
       const genresList = req.query.genres
         .split(",")
@@ -54,7 +54,7 @@ router.get("/all-games", auth, async (req, res) => {
       filter.$or = genrePatterns.map((pattern) => ({ genres: pattern }));
     }
 
-    // Filter by categories - using regex cuz data is 'string' inside [array] inside "string"
+    // Filter by categories - using regex
     if (req.query.categories) {
       const categoriesList = req.query.categories
         .split(",")
@@ -65,26 +65,16 @@ router.get("/all-games", auth, async (req, res) => {
         (category) => new RegExp(`'${category}'`, "i")
       );
 
-      // If we already have an $or from genres, we need to handle this differently
+      // If we already have an $or from genres, handle merging
       if (filter.$or) {
-        // Save the existing $or conditions
         const existingOr = filter.$or;
-
-        // Create new $or conditions for categories
         const categoryOr = categoryPatterns.map((pattern) => ({
           categories: pattern,
         }));
-
-        // Use $and to combine the two $or conditions
         filter.$and = [{ $or: existingOr }, { $or: categoryOr }];
-
-        // Remove the original $or since it's now in $and
         delete filter.$or;
       } else {
-        // If there's no existing $or, just create one for categories
-        filter.$or = categoryPatterns.map((pattern) => ({
-          categories: pattern,
-        }));
+        filter.$or = categoryPatterns.map((pattern) => ({ categories: pattern }));
       }
     }
 
@@ -95,7 +85,6 @@ router.get("/all-games", auth, async (req, res) => {
         $gte: parseFloat(req.query.minPrice),
       };
     }
-
     if (req.query.maxPrice) {
       filter.price = {
         ...(filter.price || {}),
@@ -110,7 +99,6 @@ router.get("/all-games", auth, async (req, res) => {
         $gte: new Date(req.query.fromDate),
       };
     }
-
     if (req.query.toDate) {
       filter.release_date = {
         ...(filter.release_date || {}),
@@ -122,19 +110,17 @@ router.get("/all-games", auth, async (req, res) => {
     if (req.query.windows === "true") {
       filter.windows = true;
     }
-
     if (req.query.mac === "true") {
       filter.mac = true;
     }
-
     if (req.query.linux === "true") {
       filter.linux = true;
     }
 
-    // Execute query with pagination and sorting
+    // Execute query with pagination + sorting
     const games = await Game.find(filter).sort(sort).skip(skip).limit(limit);
 
-    // Get total count for pagination metadata
+    // Get total count
     const total = await Game.countDocuments(filter);
 
     // Calculate pagination metadata
@@ -142,7 +128,40 @@ router.get("/all-games", auth, async (req, res) => {
     const hasNext = page < totalPages;
     const hasPrev = page > 1;
 
-    res.render("main.ejs", {
+    // =====================
+    // NEW: Ellipses Pagination
+    // =====================
+    const pageNumbers = [];
+    // how many pages to show around the current page
+    const pagesToShow = 2; // you can tweak this to 1, 3, etc.
+
+    // Always push page 1
+    pageNumbers.push(1);
+
+    // start & end range around current page
+    let start = Math.max(2, page - pagesToShow);
+    let end = Math.min(totalPages - 1, page + pagesToShow);
+
+    // If there's a gap after page 1, add ellipses
+    if (start > 2) {
+      pageNumbers.push("...");
+    }
+
+    for (let i = start; i <= end; i++) {
+      pageNumbers.push(i);
+    }
+
+    // If there's a gap before the last page, add ellipses
+    if (end < totalPages - 1) {
+      pageNumbers.push("...");
+    }
+
+    // Always push the last page if totalPages > 1
+    if (totalPages > 1) {
+      pageNumbers.push(totalPages);
+    }
+
+    res.render("layout.ejs", {
       title: "Catalogue",
       body: "./pages/allGames",
       games,
@@ -153,6 +172,7 @@ router.get("/all-games", auth, async (req, res) => {
         hasNext,
         hasPrev,
         limit,
+        pageNumbers, // pass array to EJS
       },
     });
   } catch (error) {
@@ -168,25 +188,90 @@ router.get("/all-games", auth, async (req, res) => {
 router.get("/game/:id", auth, async (req, res) => {
   try {
     const game = await Game.findById(req.params.id);
-
     if (!game) {
       return res.status(404).json({
         success: false,
         message: "Game not found",
       });
     }
-    res.render("main.ejs", {
+    res.render("layout.ejs", {
       title: game.name,
       body: "./pages/singleGame",
-      game
+      game,
     });
-    
   } catch (err) {
     console.error(err);
     res.status(500).json({
       success: false,
       message: "Failed to load game details",
       error: err.message,
+    });
+  }
+});
+
+router.get("/find", auth, async (req, res) => {
+  try {
+    res.render("layout.ejs", {
+      title: "Find Games",
+      body: "./pages/findGames",
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Server Error",
+    });
+  }
+});
+
+// Add this to routes/games.js
+router.get("/search", auth, async (req, res) => {
+  try {
+    const query = req.query.query;
+    const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : undefined;
+    const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : undefined;
+    const genres = req.query.genres
+      ? (Array.isArray(req.query.genres) ? req.query.genres : [req.query.genres])
+      : undefined;
+    const windows = req.query.windows === "true";
+    const mac = req.query.mac === "true";
+    const linux = req.query.linux === "true";
+
+    let filter = {};
+
+    // Add query search
+    if (query) {
+      filter.name = { $regex: query, $options: "i" };
+    }
+    // Add price filter
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      filter.price = {};
+      if (minPrice !== undefined) filter.price.$gte = minPrice;
+      if (maxPrice !== undefined) filter.price.$lte = maxPrice;
+    }
+    // Add genres filter
+    if (genres && genres.length > 0) {
+      filter.genres = { $in: genres.map((genre) => new RegExp(`'${genre}'`, "i")) };
+    }
+    // Add platform filters
+    if (windows) filter.windows = true;
+    if (mac) filter.mac = true;
+    if (linux) filter.linux = true;
+
+    // Execute query
+    const games = await Game.find(filter).limit(20);
+
+    res.render("layout.ejs", {
+      title: "Search Results",
+      body: "./pages/searchResults",
+      games,
+      query,
+    });
+  } catch (error) {
+    console.error("Error searching games:", error);
+    res.status(500).json({
+      success: false,
+      error: "Server Error",
     });
   }
 });

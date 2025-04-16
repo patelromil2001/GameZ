@@ -1,0 +1,18 @@
+<!-- views/authLayout.ejs -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %></title>
+  <!-- Link your CSS if needed -->
+  <link rel="stylesheet" href="/assets/css/home.css" />
+</head>
+<body>
+  <!-- Notice: No sidebar here -->
+  
+  <div class="auth-content">
+    <!-- This will include the actual login/register page content -->
+    <%- include(body) %>
+  </div>
+</body>
+</html>

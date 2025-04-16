@@ -1,19 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/assets/css/dashboard.css" />
-  </head>
-  <body>
-    <!-- Hero Section -->
-    <div class="hero">
-      <div class="overlay"></div>
-      <div class="hero-content">
-        <h1>Welcome to the GameZ</h1>
-        <a href="/auth/loginpage" class="btn">Login</a>
-      </div>
-    </div>
-  </body>
-</html>
+<div class="dashboard-banner">
+  <h1>Welcome to GameZ</h1>
+  <p>Discover your next favorite game!</p>
+</div>
+
+<section class="game-section">
+  <h2>🆕 New Releases</h2>
+  <div class="game-grid">
+    <% if (newReleases && newReleases.length > 0) { %>
+      <% newReleases.forEach(game => { %>
+        <div class="game-card">
+          <img
+            src="<%= game.header_image || '/assets/images/default_game.jpg' %>" 
+            alt="<%= game.name %>"
+            class="game-img"
+          />
+          <h3><%= game.name %></h3>
+          <p>$<%= game.price %></p>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <p>No new releases found.</p>
+    <% } %>
+  </div>
+</section>
+
+<section class="game-section">
+  <h2>🎮 Classics</h2>
+  <div class="game-grid">
+    <% if (classics && classics.length > 0) { %>
+      <% classics.forEach(game => { %>
+        <div class="game-card">
+          <img
+            src="<%= game.header_image || '/assets/images/default_game.jpg' %>"
+            alt="<%= game.name %>"
+            class="game-img"
+          />
+          <h3><%= game.name %></h3>
+          <p>$<%= game.price %></p>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <p>No classics found.</p>
+    <% } %>
+  </div>
+</section>

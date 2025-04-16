@@ -9,6 +9,8 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const auth = require("./middleware/auth");
+const Game = require("./models/games");
+
 
 require("dotenv").config();
 
@@ -59,13 +61,25 @@ app.use("/search", require("./routes/search")); // Search routes
 
 // Dashboard Start Up Page
 app.get("/", async (req, res) => {
-  res.render("main.ejs", { title: "Home", body: "./pages/dashboard" });
+  res.render("layout.ejs", { title: "Home", body: "./pages/dashboard" });
 });
 
 // Home Page
-app.get("/home",auth, async (req, res) => {
-  res.render("main.ejs", { title: "Home", body: "./pages/home" });
+app.get("/home", auth, async (req, res) => {
+  // Example: fetch latest 5 games by release date
+  const newReleases = await Game.find().sort({ release_date: -1 }).limit(5);
+  // Example: fetch top 5 games by metacritic_score
+  const classics = await Game.find().sort({ metacritic_score: -1 }).limit(5);
+
+  res.render("layout.ejs", {
+    title: "Home",
+    body: "./pages/dashboard", // or "pages/dashboard" if that's how your layout is set up
+    newReleases, // pass to EJS
+    classics     // pass to EJS too
+  });
 });
+
+
 
 // 404 handler
 app.use((req, res) => {

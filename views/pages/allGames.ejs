@@ -1,63 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Catalogue - GameZ</title>
-    <link rel="stylesheet" href="/assets/css/allGames.css" />
-  </head>
-  <body>
-    <div class="catalogue-container">
-      <header class="catalogue-header">
-        <h1>Games Catalogue</h1>
-        <div class="icon">🎮</div>
-      </header>
+<div class="catalogue-header">
+  <h2>All Games</h2>
+  <!-- Example: You could put a sorting or filter button here if you want -->
+</div>
 
-      <section class="games-grid">
-        <% if (games && games.length > 0) { %>
-          <% games.forEach((game, index) => { %>
-            <a href="/games/game/<%= game._id %>">
-              <div class="game-card color-<%= index % 6 %>">
-                <img
-                  src="<%= game.header_image %>"
-                  alt="<%= game.name %>"
-                  class="game-image"
-                />
-                <h2 class="game-title"><%= game.name %></h2>
-              </div>
-            </a>
-          <% }) %>
-        <% } else { %>
-          <p>No games found.</p>
-        <% } %>
-      </section>
-
-      <footer class="pagination">
-        <% if (pagination.hasPrev) { %>
-          <a href="/games/all-games?page=<%= pagination.currentPage - 1 %>">Prev</a>
-        <% } %>
-        <% 
-           let startPage = Math.max(1, pagination.currentPage - 2);
-           let endPage = Math.min(pagination.totalPages, pagination.currentPage + 2);
-           if (pagination.currentPage <= 2) { 
-             endPage = Math.min(5, pagination.totalPages); 
-           } 
-           if (pagination.currentPage >= pagination.totalPages - 1) { 
-             startPage = Math.max(1, pagination.totalPages - 4); 
-           } 
-        %>
-        <% for (let i = startPage; i <= endPage; i++) { %>
-          <a
-            href="/games/all-games?page=<%= i %>"
-            class="<%= i === pagination.currentPage ? 'active' : '' %>"
-          >
-            <%= i %>
-          </a>
-        <% } %>
-        <% if (pagination.hasNext) { %>
-          <a href="/games/all-games?page=<%= pagination.currentPage + 1 %>">Next</a>
-        <% } %>
-      </footer>
+<!-- Grid of games -->
+<div class="game-grid">
+  <% games.forEach(game => { %>
+    <div class="game-card">
+      <a href="/games/game/<%= game._id %>">
+        <img
+          src="<%= game.header_image || '/assets/images/default_game.jpg' %>"
+          alt="<%= game.name %>"
+          class="game-img"
+        />
+        <h3><%= game.name %></h3>
+        <p>$<%= game.price %></p>
+      </a>
     </div>
-  </body>
-</html>
+  <% }) %>
+</div>
+
+<!-- Pagination -->
+<div class="pagination">
+  <!-- Previous -->
+  <% if (pagination.hasPrev) { %>
+    <a href="/games/all-games?page=<%= pagination.currentPage - 1 %>">
+      Previous
+    </a>
+  <% } %>
+
+  <!-- Page numbers (or ellipses) -->
+  <% pagination.pageNumbers.forEach(num => { %>
+    <% if (num === "...") { %>
+      <span class="ellipsis">...</span>
+    <% } else if (num === pagination.currentPage) { %>
+      <span class="active"><%= num %></span>
+    <% } else { %>
+      <a href="/games/all-games?page=<%= num %>"><%= num %></a>
+    <% } %>
+  <% }) %>
+
+  <!-- Next -->
+  <% if (pagination.hasNext) { %>
+    <a href="/games/all-games?page=<%= pagination.currentPage + 1 %>">
+      Next
+    </a>
+  <% } %>
+</div>
