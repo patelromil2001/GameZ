@@ -168,3 +168,20 @@ body {
   display: inline-block;
 }
 
+.game-card {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform 0.2s ease;
+}
+
+.game-card:hover {
+  transform: scale(1.03);
+}
+
+.game-card h3,
+.game-card p {
+  text-align: center;
+  color: #111;
+  text-decoration: none;
+}

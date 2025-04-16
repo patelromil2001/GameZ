@@ -1,6 +1,5 @@
 <div class="catalogue-header">
   <h2>All Games</h2>
-  <!-- Example: You could put a sorting or filter button here if you want -->
 </div>
 
 <!-- Grid of games -->
@@ -29,16 +28,22 @@
     </a>
   <% } %>
 
-  <!-- Page numbers (or ellipses) -->
-  <% pagination.pageNumbers.forEach(num => { %>
-    <% if (num === "...") { %>
-      <span class="ellipsis">...</span>
-    <% } else if (num === pagination.currentPage) { %>
-      <span class="active"><%= num %></span>
+  <!-- Show limited range instead of hundreds -->
+  <% 
+    const total = pagination.totalPages;
+    const current = pagination.currentPage;
+    const range = 2; // how many pages before and after current
+    const start = Math.max(1, current - range);
+    const end = Math.min(total, current + range);
+  %>
+
+  <% for (let i = start; i <= end; i++) { %>
+    <% if (i === current) { %>
+      <span class="active"><%= i %></span>
     <% } else { %>
-      <a href="/games/all-games?page=<%= num %>"><%= num %></a>
+      <a href="/games/all-games?page=<%= i %>"><%= i %></a>
     <% } %>
-  <% }) %>
+  <% } %>
 
   <!-- Next -->
   <% if (pagination.hasNext) { %>

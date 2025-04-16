@@ -35,3 +35,53 @@ h1 {
 ul {
   padding-left: 1.2rem;
 }
+.game-details-container {
+  padding: 30px;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.game-price {
+  font-size: 1.2rem;
+  color: #2e86de;
+}
+
+.game-img-large {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin: 20px 0;
+}
+
+.game-description {
+  line-height: 1.6;
+  margin-bottom: 30px;
+  text-align: justify;
+}
+
+.game-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.meta-column {
+  flex: 1 1 200px;
+}
+
+.meta-column h4 {
+  margin-bottom: 8px;
+}
+
+.meta-column ul {
+  list-style: disc;
+  padding-left: 20px;
+}

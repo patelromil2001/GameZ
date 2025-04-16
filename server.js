@@ -60,9 +60,23 @@ app.use("/games", require("./routes/games")); // Game-related routes
 app.use("/search", require("./routes/search")); // Search routes
 
 // Dashboard Start Up Page
-app.get("/", async (req, res) => {
-  res.render("layout.ejs", { title: "Home", body: "./pages/dashboard" });
+app.get("/", auth, async (req, res) => {
+  try {
+    const newReleases = await Game.find().sort({ release_date: -1 }).limit(5);
+    const classics = await Game.find().sort({ metacritic_score: -1 }).limit(5);
+
+    res.render("layout.ejs", {
+      title: "Home",
+      body: "./pages/dashboard",
+      newReleases,
+      classics
+    });
+  } catch (error) {
+    console.error("Error loading dashboard:", error.message);
+    res.status(500).send("Internal Server Error");
+  }
 });
+
 
 // Home Page
 app.get("/home", auth, async (req, res) => {
@@ -73,7 +87,7 @@ app.get("/home", auth, async (req, res) => {
 
   res.render("layout.ejs", {
     title: "Home",
-    body: "./pages/dashboard", // or "pages/dashboard" if that's how your layout is set up
+    body: "./pages/dashboard", 
     newReleases, // pass to EJS
     classics     // pass to EJS too
   });

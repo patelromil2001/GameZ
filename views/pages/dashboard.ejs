@@ -8,7 +8,7 @@
   <div class="game-grid">
     <% if (newReleases && newReleases.length > 0) { %>
       <% newReleases.forEach(game => { %>
-        <div class="game-card">
+        <a href="/games/game/<%= game._id %>" class="game-card">
           <img
             src="<%= game.header_image || '/assets/images/default_game.jpg' %>" 
             alt="<%= game.name %>"
@@ -16,7 +16,7 @@
           />
           <h3><%= game.name %></h3>
           <p>$<%= game.price %></p>
-        </div>
+        </a>
       <% }) %>
     <% } else { %>
       <p>No new releases found.</p>
@@ -29,7 +29,7 @@
   <div class="game-grid">
     <% if (classics && classics.length > 0) { %>
       <% classics.forEach(game => { %>
-        <div class="game-card">
+        <a href="/games/game/<%= game._id %>" class="game-card">
           <img
             src="<%= game.header_image || '/assets/images/default_game.jpg' %>"
             alt="<%= game.name %>"
@@ -37,7 +37,7 @@
           />
           <h3><%= game.name %></h3>
           <p>$<%= game.price %></p>
-        </div>
+        </a>
       <% }) %>
     <% } else { %>
       <p>No classics found.</p>
