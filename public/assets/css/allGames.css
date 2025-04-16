@@ -83,3 +83,112 @@ body {
 a{
   text-decoration: none;
 }
+
+.catalogue-container {
+  display: flex;
+  gap: 20px;
+}
+.filters-sidebar {
+  width: 250px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  height: fit-content;
+}
+.filters-sidebar h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+.filters-sidebar fieldset {
+  border: none;
+  padding: 0;
+  margin-bottom: 15px;
+}
+.filters-sidebar legend {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+.filters-sidebar label {
+  display: block;
+  margin-bottom: 5px;
+}
+.filters-sidebar input[type="checkbox"],
+.filters-sidebar input[type="radio"] {
+  margin-right: 5px;
+}
+.filters-sidebar input[type="number"],
+.filters-sidebar select {
+  width: 90%;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+.filters-sidebar .price-range label {
+  display: inline-block;
+  width: 40px;
+}
+.filters-sidebar .price-range input[type="number"] {
+  width: calc(90% - 50px);
+}
+.filters-sidebar button {
+  padding: 8px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 5px;
+}
+.filters-sidebar button:hover {
+  background-color: #0056b3;
+}
+.filters-sidebar a.reset-button {
+  display: inline-block;
+  padding: 8px 15px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.filters-sidebar a.reset-button:hover {
+  background-color: #5a6268;
+}
+.main-content {
+  flex: 1;
+}
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(
+          auto-fill,
+          minmax(200px, 1fr)
+        );
+  gap: 15px;
+}
+.game-card {
+  border: 1px solid #eee;
+  padding: 10px;
+  text-align: center;
+}
+.game-image {
+  max-width: 100%;
+  height: auto;
+}
+.pagination {
+  margin-top: 20px;
+  text-align: center;
+}
+.pagination a {
+  margin: 0 5px;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  text-decoration: none;
+  color: #007bff;
+}
+.pagination a.active {
+  font-weight: bold;
+  background-color: #007bff;
+  color: white;
+}
