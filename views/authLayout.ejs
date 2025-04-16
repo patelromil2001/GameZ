@@ -1,0 +1,28 @@
+<!-- views/authLayout.ejs -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/assets/css/home.css" />
+</head>
+<body>
+  <!-- No sidebar here -->
+
+  <div class="auth-content">
+    <%- include(body) %>
+  </div>
+
+  <!-- Footer -->
+  <footer
+    style="
+      background-color: #333;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    "
+  >
+    <p>&copy; 2025 Final Group Project</p>
+  </footer>
+</body>
+</html>
