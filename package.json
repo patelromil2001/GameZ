@@ -1,18 +1,20 @@
 {
-  "name": "gamez-devwrat---copy",
+  "name": "gamez",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js"
   },
-  "author": "Riya Chawla",
+  "author": "Devwrat, Riya, Romil, Vaisakh",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "body-parser": "^2.2.0",
     "connect-mongo": "^5.1.0",
-    "dotenv": "^16.4.7",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.5.0",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "express-session": "^1.18.1",

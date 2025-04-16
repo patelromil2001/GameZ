@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Games</title>
+  <link rel="stylesheet" href="/assets/css/search.css">
+</head>
+<body>
+  <div class="container">
+
+    <section class="search-bar">
+      <h1>Find Games</h1>
+      <form action="/search/results" method="GET">
+        <input type="text" name="query" placeholder="Search for games..." required />
+        <button type="submit">Search</button>
+      </form>
+    </section>
+
+    <section class="results">
+      <h2>Search Results</h2>
+      <% if (results && results.length > 0) { %>
+        <div class="game-grid">
+          <% results.forEach(game => { %>
+            <div class="game-card">
+              <img src="<%= game.header_image %>" alt="<%= game.title %>" class="game-cover" />
+              <div class="game-info">
+                <h3 class="game-title"><%= game.title %></h3>
+                <p class="game-description"><%= game.description %></p>
+                <p class="game-genre"><strong>Genre:</strong> <%= game.genre %></p>
+                <p class="game-release-date"><strong>Release Date:</strong> <%= game.release_date %></p>
+                <a href="/games/game/<%= game._id %>" class="view-details">View Details</a>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } else { %>
+        <p>No results found for your query.</p>
+      <% } %>
+    </section>
+  </div>
+</body>
+</html>

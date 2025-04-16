@@ -36,13 +36,7 @@ router.post(
       const user = new User({ name, email, password: hashedPassword });
       await user.save();
 
-      // Generate JWT token
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      });
-
-      // Send response with success message and token
-      res.status(201).json({ message: "User registered successfully", token });
+      res.redirect("/auth/loginpage");
     } catch (error) {
       res.status(500).json({ error: "Server error: " + error.message });
     }
@@ -67,21 +61,29 @@ router.post(
       // Find user by email
       const user = await User.findOne({ email });
       if (!user) {
+        console.log ("User not found");
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
       // Compare password with stored hash
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
+        console.log ("Password not matched");
         return res.status(401).json({ error: "Invalid credentials" });
       }
       // Generate JWT token
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'web', {
         expiresIn: "1h",
       });
 
-      // Send response with the token
-      res.json({ token });
+      // Store token in cookie and redirect to dashboard
+      res.cookie("token", token, {
+        httpOnly: true,
+        maxAge: 60 * 60 * 1000, // 1 hour
+        secure: process.env.NODE_ENV === "production", // true in production
+      });
+
+      res.redirect("/home");
     } catch (error) {
       res.status(500).json({ error: "Server error: " + error.message });
     }
@@ -90,9 +92,19 @@ router.post(
 
 // Logout Route - Destroy Session
 router.post("/logout", (req, res) => {
-  // Just a dummy response – client should delete the token
-  res.status(200).json({ message: "Logged out successfully. Please remove token from client." });
+  res.clearCookie("token");
+  res.redirect("/auth/loginpage");
 });
+
+// Register Page
+router.get("/registerpage", async (req, res) => {
+  res.render("main.ejs", { title: "Home", body: "./pages/register" });
+});
+// Login Page
+router.get("/loginpage", async (req, res) => {
+  res.render("main.ejs", { title: "Home", body: "./pages/login" });
+});
+
 
 
 module.exports = router;
