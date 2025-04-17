@@ -98,11 +98,11 @@ router.post("/logout", (req, res) => {
 
 // Register Page
 router.get("/registerpage", async (req, res) => {
-  res.render("main.ejs", { title: "Home", body: "./pages/register" });
+  res.render("authLayout.ejs", { title: "Home", body: "./pages/register" });
 });
 // Login Page
 router.get("/loginpage", async (req, res) => {
-  res.render("main.ejs", { title: "Home", body: "./pages/login" });
+  res.render("authLayout.ejs", { title: "Home", body: "./pages/login" });
 });
 
 
