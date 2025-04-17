@@ -1,119 +1,284 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Catalogue - GameZ</title>
-    <link rel="stylesheet" href="/assets/css/allGames.css" />
-    <script>
-      function handleWishlistClick(button, gameId) {
-        fetch(`/add/${gameId}`, {
-          method: "POST",
-        })
-          .then((response) => {
-            if (response.ok) {
-              button.disabled = true;
-              button.textContent = "Added to Wishlist";
-              button.classList.add("added-btn");
-              alert("Game successfully added to your wishlist!");
-            } else {
-              throw new Error("Failed to add the game to the wishlist.");
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-            alert("An error occurred while adding to the wishlist.");
-          });
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catalogue - GameZ</title>
+  <link rel="stylesheet" href="/assets/css/allGames.css" />
+</head>
+<body>
+<%
+const buildQueryString = (queryParams, excludeKey = null) => {
+  const params = new URLSearchParams();
+  for (const key in queryParams) {
+    if (key !== excludeKey && queryParams[key] !== undefined && queryParams[key] !== '') {
+      if (Array.isArray(queryParams[key])) {
+        params.append(key, queryParams[key].join(','));
+      } else {
+        params.append(key, queryParams[key]);
       }
-    </script>
-  </head>
-  <body>
-    <div class="page-container">
-      <!-- Sidebar -->
-      <!-- <aside class="sidebar">
-        <h2>Categories</h2>
-        <ul>
-          <li><a href="/games/all-games?category=action">Action</a></li>
-          <li><a href="/games/all-games?category=adventure">Adventure</a></li>
-          <li><a href="/games/all-games?category=puzzle">Puzzle</a></li>
-          <li><a href="/games/all-games?category=rpg">RPG</a></li>
-          <li><a href="/games/all-games?category=shooter">Shooter</a></li>
-        </ul>
-        <h2>Other Links</h2>
-        <ul>
-          <li><a href="/wishlist">My Wishlist</a></li>
+    }
+  }
+  return params.toString();
+};
 
-        </ul>
-      </aside> -->
+const currentQuery = typeof query !== 'undefined' ? query : {};
+const baseQueryString = buildQueryString(currentQuery, 'page');
 
-      <div class="catalogue-container">
-        <header class="catalogue-header">
-          <h1>Games Catalogue</h1>
-          <div class="icon">🎮</div>
+const currentGenres = (currentQuery.genres || '').split(',').filter(g => g);
+const currentCategories = (currentQuery.categories || '').split(',').filter(c => c);
+const currentSort = currentQuery.sort || 'release_date';
+const currentMinPrice = currentQuery.minPrice || '';
+const currentMaxPrice = currentQuery.maxPrice || '';
 
-          <form action="/search/results" method="GET" class="search-form">
-            <input
-              type="text"
-              name="query"
-              placeholder="Search for games..."
-              required
-            />
-            <button type="submit">Search</button>
-          </form>
-        </header>
+const availableGenres = [
+  'Action', 'Adventure', 'Animation & Modeling', 'Audio Production',
+  'Casual', 'Design & Illustration', 'Documentary', 'Early Access',
+  'Education', 'Episodic', 'Free To Play', 'Game Development', 'Indie',
+  'Massively Multiplayer', 'RPG', 'Racing', 'Short', 'Simulation',
+  'Sports', 'Strategy'
+];
 
-        <section class="games-grid">
-          <% if (games && games.length > 0) { %>
-            <% games.forEach((game, index) => { %>
-              <div class="game-card color-<%= index % 6 %>">
-                <a href="/games/game/<%= game._id %>">
-                  <img
-                    src="<%= game.header_image %>"
-                    alt="<%= game.name %>"
-                    class="game-image"
-                  />
-                  <h2 class="game-title"><%= game.name %></h2>
-                </a>
-                <button
-                  onclick="handleWishlistClick(this, '<%= game._id %>')"
-                  class="wishlist-btn"
-                >
-                  Add to Wishlist
-                </button>
-              </div>
-            <% }) %>
-          <% } else { %>
-            <p>No games found.</p>
-          <% } %>
-        </section>
+const availableCategories = [
+  'Single-player', 'Multi-player', 'Co-op', 'PvP', 'Shared/Split Screen',
+  'MMO', 'Cross-Platform Multiplayer', 'Full controller support',
+  'Includes level editor', 'In-App Purchases', 'Remote Play Together',
+  'Steam Achievements', 'Steam Cloud', 'Steam Leaderboards',
+  'Steam Trading Cards', 'Steam Workshop', 'VR Support'
+];
+%>
 
-        <footer class="pagination">
-          <% if (pagination.hasPrev) { %>
-            <a href="/games/all-games?page=<%= pagination.currentPage - 1 %>">Prev</a>
-          <% } %>
-          <% 
-             let startPage = Math.max(1, pagination.currentPage - 2);
-             let endPage = Math.min(pagination.totalPages, pagination.currentPage + 2);
-             if (pagination.currentPage <= 2) { 
-               endPage = Math.min(5, pagination.totalPages); 
-             } 
-             if (pagination.currentPage >= pagination.totalPages - 1) { 
-               startPage = Math.max(1, pagination.totalPages - 4); 
-             } 
-          %>
-          <% for (let i = startPage; i <= endPage; i++) { %>
-            <a
-              href="/games/all-games?page=<%= i %>"
-              class="<%= i === pagination.currentPage ? 'active' : '' %>"
-            >
-              <%= i %>
+<div class="page-container">
+  <aside class="filters-sidebar">
+    <h2>Filters & Sort</h2>
+    <form action="/games/all-games" method="GET" id="filter-form">
+      <fieldset>
+        <legend>Sort By</legend>
+        <label>
+          <input type="radio" name="sort" value="release_date" <%= currentSort === 'release_date' ? 'checked' : '' %>>
+          Release Date (Oldest)
+        </label>
+        <label>
+          <input type="radio" name="sort" value="-release_date" <%= currentSort === '-release_date' ? 'checked' : '' %>>
+          Release Date (Newest)
+        </label>
+        <label>
+          <input type="radio" name="sort" value="name" <%= currentSort === 'name' ? 'checked' : '' %>>
+          Name (A-Z)
+        </label>
+        <label>
+          <input type="radio" name="sort" value="-name" <%= currentSort === '-name' ? 'checked' : '' %>>
+          Name (Z-A)
+        </label>
+        <label>
+          <input type="radio" name="sort" value="price" <%= currentSort === 'price' ? 'checked' : '' %>>
+          Price (Low to High)
+        </label>
+        <label>
+          <input type="radio" name="sort" value="-price" <%= currentSort === '-price' ? 'checked' : '' %>>
+          Price (High to Low)
+        </label>
+        <label>
+          <input type="radio" name="sort" value="-positive" <%= currentSort === '-positive' ? 'checked' : '' %>>
+          Reviews (Most Positive)
+        </label>
+        <label>
+          <input type="radio" name="sort" value="-negative" <%= currentSort === '-negative' ? 'checked' : '' %>>
+          Reviews (Most Negative)
+        </label>
+      </fieldset>
+
+      <fieldset class="price-range">
+        <legend>Price Range</legend>
+        <label for="minPrice">Min:</label>
+        <input type="number" id="minPrice" name="minPrice" min="0" step="0.01" placeholder="e.g., 0" value="<%= currentMinPrice %>">
+        <br>
+        <label for="maxPrice">Max:</label>
+        <input type="number" id="maxPrice" name="maxPrice" min="0" step="0.01" placeholder="e.g., 60" value="<%= currentMaxPrice %>">
+      </fieldset>
+
+      <fieldset>
+        <legend>Genres</legend>
+        <% availableGenres.forEach(genre => { %>
+          <label>
+            <input type="checkbox" name="genres_cb" value="<%= genre %>" <%= currentGenres.includes(genre) ? 'checked' : '' %>>
+            <%= genre %>
+          </label>
+        <% }) %>
+      </fieldset>
+
+      <fieldset>
+        <legend>Categories</legend>
+        <% availableCategories.forEach(category => { %>
+          <label>
+            <input type="checkbox" name="categories_cb" value="<%= category %>" <%= currentCategories.includes(category) ? 'checked' : '' %>>
+            <%= category %>
+          </label>
+        <% }) %>
+      </fieldset>
+
+      <fieldset>
+        <legend>Platform</legend>
+        <label>
+          <input type="checkbox" name="windows" value="true" <%= currentQuery.windows === 'true' ? 'checked' : '' %>>
+          Windows
+        </label>
+        <label>
+          <input type="checkbox" name="mac" value="true" <%= currentQuery.mac === 'true' ? 'checked' : '' %>>
+          Mac
+        </label>
+        <label>
+          <input type="checkbox" name="linux" value="true" <%= currentQuery.linux === 'true' ? 'checked' : '' %>>
+          Linux
+        </label>
+      </fieldset>
+
+      <button type="submit">Apply Filters</button>
+      <a href="/games/all-games" class="reset-button">Reset</a>
+    </form>
+  </aside>
+
+  <main class="main-catalogue-content">
+    <header class="catalogue-header">
+      <h1>Games Catalogue</h1>
+      <div class="icon">🎮</div>
+      <form action="/search/results" method="GET" class="search-form">
+        <input type="text" name="query" placeholder="Search for games..." required />
+        <button type="submit">Search</button>
+      </form>
+    </header>
+
+    <section class="games-grid">
+      <% if (games && games.length > 0) { %>
+        <% games.forEach((game, index) => { %>
+          <div class="game-card color-<%= index % 6 %>">
+            <a href="/games/game/<%= game._id %>">
+              <img src="<%= game.header_image %>" alt="<%= game.name %>" class="game-image" />
+              <h2 class="game-title"><%= game.name %></h2>
             </a>
+            <button onclick="handleWishlistClick(this, '<%= game._id %>')" class="wishlist-btn">
+              Add to Wishlist
+            </button>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <p>No games found matching your criteria.</p>
+      <% } %>
+    </section>
+
+    <footer class="pagination">
+      <% if (pagination && pagination.totalPages > 1) { %>
+        <% if (pagination.hasPrev) { %>
+          <a href="/games/all-games?<%= baseQueryString ? baseQueryString + '&' : '' %>page=<%= pagination.currentPage - 1 %>">Prev</a>
+        <% } %>
+        <%
+          let startPage = Math.max(1, pagination.currentPage - 2);
+          let endPage = Math.min(pagination.totalPages, pagination.currentPage + 2);
+          if (pagination.currentPage <= 2) {
+            endPage = Math.min(5, pagination.totalPages);
+          }
+          if (pagination.currentPage >= pagination.totalPages - 1) {
+            startPage = Math.max(1, pagination.totalPages - 4);
+          }
+        %>
+        <% if (startPage > 1) { %>
+          <a href="/games/all-games?<%= baseQueryString ? baseQueryString + '&' : '' %>page=1">1</a>
+          <% if (startPage > 2) { %>
+            <span>...</span>
           <% } %>
-          <% if (pagination.hasNext) { %>
-            <a href="/games/all-games?page=<%= pagination.currentPage + 1 %>">Next</a>
+        <% } %>
+        <% for (let i = startPage; i <= endPage; i++) { %>
+          <a href="/games/all-games?<%= baseQueryString ? baseQueryString + '&' : '' %>page=<%= i %>" class="<%= i === pagination.currentPage ? 'active' : '' %>">
+            <%= i %>
+          </a>
+        <% } %>
+        <% if (endPage < pagination.totalPages) { %>
+          <% if (endPage < pagination.totalPages - 1) { %>
+            <span>...</span>
           <% } %>
-        </footer>
-      </div>
-    </div>
-  </body>
+          <a href="/games/all-games?<%= baseQueryString ? baseQueryString + '&' : '' %>page=<%= pagination.totalPages %>"><%= pagination.totalPages %></a>
+        <% } %>
+        <% if (pagination.hasNext) { %>
+          <a href="/games/all-games?<%= baseQueryString ? baseQueryString + '&' : '' %>page=<%= pagination.currentPage + 1 %>">Next</a>
+        <% } %>
+      <% } %>
+    </footer>
+  </main>
+</div>
+
+<script>
+  function handleWishlistClick(button, gameId) {
+    fetch(`/add/${gameId}`, {
+      method: "POST",
+    })
+            .then((response) => {
+              if (response.ok) {
+                button.disabled = true;
+                button.textContent = "Added to Wishlist";
+                button.classList.add("added-btn");
+                alert("Game successfully added to your wishlist!");
+              } else {
+                throw new Error("Failed to add the game to the wishlist.");
+              }
+            })
+            .catch((error) => {
+              console.error(error);
+              alert("An error occurred while adding to the wishlist.");
+            });
+  }
+
+  const filterForm = document.getElementById("filter-form");
+
+  // Helper function to consolidate checkbox values into a single hidden input
+  function consolidateCheckboxes(form, checkboxNameAttr, targetInputName) {
+    const checkedCheckboxes = form.querySelectorAll(
+            `input[name="${checkboxNameAttr}"]:checked`,
+    );
+    const selectedValues = Array.from(checkedCheckboxes).map(
+            (cb) => cb.value,
+    );
+
+    // Remove any existing hidden input for this target
+    const existingHiddenInput = form.querySelector(
+            `input[name="${targetInputName}"][type="hidden"]`,
+    );
+    if (existingHiddenInput) {
+      existingHiddenInput.remove();
+    }
+
+    // If any checkboxes are checked, create and append the hidden input
+    if (selectedValues.length > 0) {
+      const consolidatedInput = document.createElement("input");
+      consolidatedInput.type = "hidden";
+      consolidatedInput.name = targetInputName;
+      consolidatedInput.value = selectedValues.join(",");
+      form.appendChild(consolidatedInput);
+    }
+
+    // Temporarily disable the original checkboxes before submission
+    form
+            .querySelectorAll(`input[name="${checkboxNameAttr}"]`)
+            .forEach((cb) => (cb.disabled = true));
+  }
+
+  if (filterForm) {
+    filterForm.addEventListener("submit", (event) => {
+      consolidateCheckboxes(filterForm, "genres_cb", "genres");
+      consolidateCheckboxes(filterForm, "categories_cb", "categories");
+
+      // Re-enable checkboxes immediately after the current task queue
+      // This ensures they are not submitted but are available if submission fails
+      // or for subsequent interactions without a page reload (though default form submission reloads).
+      setTimeout(() => {
+        filterForm
+                .querySelectorAll('input[name="genres_cb"]')
+                .forEach((cb) => (cb.disabled = false));
+        filterForm
+                .querySelectorAll('input[name="categories_cb"]')
+                .forEach((cb) => (cb.disabled = false));
+      }, 0);
+    });
+  }
+</script>
+</body>
 </html>
