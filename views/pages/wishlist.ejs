@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wishlist - GameZ</title>
+    <link rel="stylesheet" href="/assets/css/wishlist.css" />
+  </head>
+  <body>
+    <div class="page-container">
+      <aside class="sidebar">
+        <div class="profile-icon">👤</div>
+        <nav>
+          <a href="/home">Home</a>
+          <a href="/games/all-games">Games</a>
+          <a href="/wishlist">Wishlist</a>
+          <a>
+            <form action="/auth/logout" method="post">
+              <button type="submit">Logout</button>
+            </form>
+          </a>
+        </nav>
+      </aside>
+
+      <div class="wishlist-container">
+        <header class="wishlist-header">
+          <h1>My Wishlist</h1>
+          <div class="icon">🎮</div>
+        </header>
+
+        <section class="games-grid">
+          <% if (wishlist && wishlist.length > 0) { %>
+            <% wishlist.forEach((game, index) => { %>
+              <div class="game-card color-<%= index % 6 %>">
+                <img
+                  src="<%= game.header_image %>"
+                  alt="<%= game.name %>"
+                  class="game-image"
+                />
+                <h2 class="game-title"><%= game.name %></h2>
+                <p class="game-price">Price: $<%= game.price %></p>
+
+                <div class="wishlist-actions">
+                  <form action="/remove/<%= game._id %>" method="POST">
+                    <button type="submit" class="remove-btn">Remove</button>
+                  </form>
+                </div>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <p class="empty-wishlist">
+              Your wishlist is currently empty. Explore games and add some to your collection!
+            </p>
+          <% } %>
+        </section>
+      </div>
+    </div>
+  </body>
+</html>

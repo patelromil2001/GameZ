@@ -1,4 +1,3 @@
-// Main application file
 const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
@@ -27,10 +26,10 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // Middleware
-app.use(express.json()); // Parse JSON bodies
-app.use(express.urlencoded({ extended: false })); // Parse URL-encoded bodies
-app.use(methodOverride("_method")); // For HTTP method overrides
-app.use(morgan("dev")); // Logging HTTP requests
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: false })); 
+app.use(methodOverride("_method")); 
+app.use(morgan("dev")); 
 app.use(bodyParser.json());
 app.use(cookieParser());
 
@@ -41,7 +40,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
-    cookie: { maxAge: 60 * 60 * 1000 }, // Sessions last for 1 hour
+    cookie: { maxAge: 60 * 60 * 1000 }, 
   })
 );
 
@@ -52,10 +51,15 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use("/auth", require("./routes/auth")); // Authentication routes
-app.use("/wishlist", require("./routes/wishlist")); // Wishlist routes
-app.use("/games", require("./routes/games")); // Game-related routes
-app.use("/search", require("./routes/search")); // Search routes
+app.use("/auth", require("./routes/auth")); 
+app.use("/games", require("./routes/games")); 
+
+const wishlistRoutes = require("./routes/wishlist");
+const searchRoutes = require('./routes/search');
+
+app.use('/search', searchRoutes);
+app.use("/", wishlistRoutes);
+
 
 // Dashboard Start Up Page
 app.get("/", async (req, res) => {

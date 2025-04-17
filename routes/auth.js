@@ -61,16 +61,18 @@ router.post(
       // Find user by email
       const user = await User.findOne({ email });
       if (!user) {
+        console.log ("User not found");
         return res.status(401).json({ error: "Invalid credentials" });
       }
 
       // Compare password with stored hash
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
+        console.log ("Password not matched");
         return res.status(401).json({ error: "Invalid credentials" });
       }
       // Generate JWT token
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'web', {
         expiresIn: "1h",
       });
 

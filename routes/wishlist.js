@@ -1,21 +1,23 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User'); 
+const authenticateUser = require('../middleware/auth');
 // Riya - Wishlist 
 // Add to Wishlist
-router.post('/add/:id', async (req, res) => {
+router.post('/add/:id', authenticateUser, async (req, res) => {
   try {
-    const userId = req.session?.userId; 
-    if (!userId) {
-      return res.status(401).json({ success: false, message: 'User not authenticated' });
+    const userId = req.user.userId; 
+    const gameId = req.params.id; 
+
+    const user = await User.findById(userId); 
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    const gameId = req.params.id;
-    const user = await User.findById(userId);
-
     if (!user.wishlist.includes(gameId)) {
-      user.wishlist.push(gameId);
-      await user.save();
+      user.wishlist.push(gameId); 
+      await user.save(); 
     }
 
     res.status(200).json({ success: true, message: 'Game added to wishlist', wishlist: user.wishlist });
@@ -25,40 +27,54 @@ router.post('/add/:id', async (req, res) => {
   }
 });
 
-// Remove from Wishlist
-router.post('/remove/:id', async (req, res) => {
+// Remove from Wishlist Route
+router.post('/remove/:id', authenticateUser, async (req, res) => {
   try {
-    const userId = req.session?.userId; 
-    if (!userId) {
-      return res.status(401).json({ success: false, message: 'User not authenticated' });
+    const userId = req.user.userId; 
+    const gameId = req.params.id; 
+    const user = await User.findById(userId); 
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    const gameId = req.params.id;
-    const user = await User.findById(userId);
-
-    user.wishlist = user.wishlist.filter(id => id.toString() !== gameId);
-    await user.save();
-
-    res.status(200).json({ success: true, message: 'Game removed from wishlist', wishlist: user.wishlist });
+    user.wishlist = user.wishlist.filter((id) => id.toString() !== gameId);
+    await user.save(); 
+    return res.redirect('/wishlist');
   } catch (error) {
     console.error('Error removing from wishlist:', error);
-    res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    return res.status(500).render('pages/wishlist', {
+      message: 'Server error occurred while removing the game.',
+      wishlist: [],
+    });
   }
 });
 
-// View Wishlist
-router.get('/', async (req, res) => {
+// Fetch Wishlist Route
+router.get('/wishlist', authenticateUser, async (req, res) => {
   try {
-    const userId = req.session?.userId; 
-    if (!userId) {
-      return res.status(401).json({ success: false, message: 'User not authenticated' });
+    console.log('Fetching wishlist...');
+    const userId = req.user.userId; 
+    const user = await User.findById(userId).populate('wishlist');
+
+    if (!user) {
+      return res.render('pages/wishlist', {
+        message: 'User not found',
+        wishlist: [],
+      });
     }
 
-    const user = await User.findById(userId).populate('wishlist');
-    res.status(200).json({ success: true, message: 'Wishlist fetched successfully', wishlist: user.wishlist });
+    console.log('GOING TO WIShLIST PAGE...');
+    res.render('pages/wishlist', {
+      wishlist: user.wishlist,
+      message: null,
+    });
   } catch (error) {
     console.error('Error fetching wishlist:', error);
-    res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+    res.render('pages/wishlist', {
+      message: 'Server error',
+      wishlist: [],
+    });
   }
 });
 
