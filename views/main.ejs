@@ -3,6 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <title><%= title %></title>
+    <link
+      rel="shortcut icon"
+      href="/assets/images/logo.png"
+      type="image/x-icon"
+    />
     <link rel="stylesheet" href="/assets/css/home.css" />
   </head>
   <body>
@@ -11,7 +16,23 @@
 
     <!-- MAIN CONTENT -->
     <div class="main-content">
-      <%- include(body, locals) %>  <!-- ✅ THIS LINE IS CRITICAL -->
+      <%- include(body, locals) %>
+      <!-- ✅ THIS LINE IS CRITICAL -->
     </div>
+    <script>
+      function toggleSidebar() {
+        const sidebar = document.getElementById("sidebar");
+        sidebar.classList.toggle("open");
+      }
+
+      // Optional: Close sidebar when clicking outside
+      document.addEventListener("click", function (e) {
+        const sidebar = document.getElementById("sidebar");
+        const toggleButton = document.querySelector(".mobile-toggle");
+        if (!sidebar.contains(e.target) && !toggleButton.contains(e.target)) {
+          sidebar.classList.remove("open");
+        }
+      });
+    </script>
   </body>
 </html>

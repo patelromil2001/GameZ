@@ -1,46 +1,59 @@
-<div class="dashboard-banner">
-  <h1>Welcome to GameZ</h1>
-  <p>Discover your next favorite game!</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - GameZ</title>
+    <link rel="stylesheet" href="/assets/css/dashboard.css" />
+  </head>
+  <body>
+    <div class="page-container">
+      <header class="dashboard-header">
+        <h1>Welcome to GameZ</h1>
+        <p>Discover your next favorite game!</p>
+      </header>
 
-<section class="game-section">
-  <h2>🆕 New Releases</h2>
-  <div class="game-grid">
-    <% if (newReleases && newReleases.length > 0) { %>
-      <% newReleases.forEach(game => { %>
-        <a href="/games/game/<%= game._id %>" class="game-card">
-          <img
-            src="<%= game.header_image || '/assets/images/default_game.jpg' %>" 
-            alt="<%= game.name %>"
-            class="game-img"
-          />
-          <h3><%= game.name %></h3>
-          <p>$<%= game.price %></p>
-        </a>
-      <% }) %>
-    <% } else { %>
-      <p>No new releases found.</p>
-    <% } %>
-  </div>
-</section>
+      <section class="games-grid-section">
+        <h2>🆕 New Releases</h2>
+        <div class="game-grid">
+          <% if (newReleases && newReleases.length > 0) { %>
+            <% newReleases.forEach((game, index) => { %>
+              <a href="/games/game/<%= game._id %>" class="game-card color-<%= index % 6 %>">
+                <img
+                  src="<%= game.header_image || '/assets/images/default_game.jpg' %>"
+                  alt="<%= game.name %>"
+                  class="game-img"
+                />
+                <h3><%= game.name %></h3>
+                <p>$<%= game.price %></p>
+              </a>
+            <% }) %>
+          <% } else { %>
+            <p class="empty-section">No new releases found.</p>
+          <% } %>
+        </div>
+      </section>
 
-<section class="game-section">
-  <h2>🎮 Classics</h2>
-  <div class="game-grid">
-    <% if (classics && classics.length > 0) { %>
-      <% classics.forEach(game => { %>
-        <a href="/games/game/<%= game._id %>" class="game-card">
-          <img
-            src="<%= game.header_image || '/assets/images/default_game.jpg' %>"
-            alt="<%= game.name %>"
-            class="game-img"
-          />
-          <h3><%= game.name %></h3>
-          <p>$<%= game.price %></p>
-        </a>
-      <% }) %>
-    <% } else { %>
-      <p>No classics found.</p>
-    <% } %>
-  </div>
-</section>
+      <section class="games-grid-section">
+        <h2>🎮 Classics</h2>
+        <div class="game-grid">
+          <% if (classics && classics.length > 0) { %>
+            <% classics.forEach((game, index) => { %>
+              <a href="/games/game/<%= game._id %>" class="game-card color-<%= index % 6 %>">
+                <img
+                  src="<%= game.header_image || '/assets/images/default_game.jpg' %>"
+                  alt="<%= game.name %>"
+                  class="game-img"
+                />
+                <h3><%= game.name %></h3>
+                <p>$<%= game.price %></p>
+              </a>
+            <% }) %>
+          <% } else { %>
+            <p class="empty-section">No classics found.</p>
+          <% } %>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

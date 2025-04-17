@@ -7,9 +7,8 @@ const connectDB = require("./config/db");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const path = require("path");
-const auth = require("./middleware/auth");
+const {authenticateUser} = require("./middleware/auth");
 const Game = require("./models/games");
-
 
 require("dotenv").config();
 
@@ -28,10 +27,10 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // Middleware
-app.use(express.json()); 
-app.use(express.urlencoded({ extended: false })); 
-app.use(methodOverride("_method")); 
-app.use(morgan("dev")); 
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(methodOverride("_method"));
+app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
@@ -42,7 +41,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
-    cookie: { maxAge: 60 * 60 * 1000 }, 
+    cookie: { maxAge: 60 * 60 * 1000 },
   })
 );
 
@@ -53,47 +52,31 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use("/auth", require("./routes/auth")); 
-app.use("/games", require("./routes/games")); 
+app.use("/auth", require("./routes/auth"));
+app.use("/games", require("./routes/games"));
 
 const wishlistRoutes = require("./routes/wishlist");
-const searchRoutes = require('./routes/search');
+const searchRoutes = require("./routes/search");
 
-app.use('/search', searchRoutes);
+app.use("/search", searchRoutes);
 app.use("/", wishlistRoutes);
 
-
 // Dashboard Start Up Page
-app.get("/", auth, async (req, res) => {
+app.get("/", authenticateUser, async (req, res) => {
   try {
-    const newReleases = await Game.find().sort({ release_date: -1 }).limit(5);
-    const classics = await Game.find().sort({ metacritic_score: -1 }).limit(5);
+    const newReleases = await Game.find().sort({ release_date: -1 }).limit(6);
+    const classics = await Game.find().sort({ metacritic_score: -1 }).limit(6);
 
     res.render("main.ejs", {
-      title: "Home",
+      title: "Dashboard",
       body: "./pages/dashboard",
       newReleases,
-      classics
+      classics,
     });
   } catch (error) {
     console.error("Error loading dashboard:", error.message);
     res.status(500).send("Internal Server Error");
   }
-});
-
-// Home Page
-app.get("/home", auth, async (req, res) => {
-  // Example: fetch latest 5 games by release date
-  const newReleases = await Game.find().sort({ release_date: -1 }).limit(5);
-  // Example: fetch top 5 games by metacritic_score
-  const classics = await Game.find().sort({ metacritic_score: -1 }).limit(5);
-
-  res.render("main.ejs", {
-    title: "Home",
-    body: "./pages/dashboard", 
-    newReleases, // pass to EJS
-    classics     // pass to EJS too
-  });
 });
 
 // 404 handler

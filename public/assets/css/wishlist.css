@@ -10,60 +10,6 @@ body {
     display: flex;
   }
   
-  .sidebar {
-    width: 240px;
-    background-color: #282c34;
-    color: #ffffff;
-    padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-  }
-  
-  .sidebar .profile-icon {
-    font-size: 48px;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
-  .sidebar nav {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .sidebar nav a {
-    color: #61dafb;
-    text-decoration: none;
-    padding: 12px 0;
-    font-size: 1rem;
-    border-bottom: 1px solid #333333;
-    transition: all 0.3s ease;
-    width: 100%;
-    text-align: center;
-  }
-  
-  .sidebar nav a:hover {
-    background-color: #333333;
-    border-radius: 5px;
-    color: #ffffff;
-  }
-  
-  .sidebar nav form button {
-    background-color: #e63946;
-    color: #ffffff;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
-  
-  .sidebar nav form button:hover {
-    background-color: #c0392b;
-    transform: scale(1.05);
-  }
-  
   .wishlist-container {
     flex: 1;
     padding: 20px;

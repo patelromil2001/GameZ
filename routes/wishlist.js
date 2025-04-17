@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User'); 
-const authenticateUser = require('../middleware/auth');
+const {authenticateUser} = require('../middleware/auth');
 // Riya - Wishlist 
 // Add to Wishlist
 router.post('/add/:id', authenticateUser, async (req, res) => {
@@ -64,8 +64,9 @@ router.get('/wishlist', authenticateUser, async (req, res) => {
       });
     }
 
-    console.log('GOING TO WIShLIST PAGE...');
-    res.render('pages/wishlist', {
+    res.render("main.ejs", {
+      title: "Wishlist",
+      body: "./pages/wishlist",
       wishlist: user.wishlist,
       message: null,
     });

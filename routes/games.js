@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const Game = require("../models/games");
-const auth = require("../middleware/auth");
+const {authenticateUser} = require("../middleware/auth");
 
 // api fetching all the games
-router.get("/all-games", auth, async (req, res) => {
+router.get("/all-games", authenticateUser, async (req, res) => {
   try {
     // Pagination
     const page = parseInt(req.query.page) || 1;
@@ -166,7 +166,7 @@ router.get("/all-games", auth, async (req, res) => {
 });
 
 // api fetching Game detail page
-router.get("/game/:id", auth, async (req, res) => {
+router.get("/game/:id", authenticateUser, async (req, res) => {
   try {
     const game = await Game.findById(req.params.id);
 

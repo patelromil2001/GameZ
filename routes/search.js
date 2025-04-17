@@ -1,6 +1,7 @@
 const express = require('express');
 const Game = require('../models/games'); 
 const router = express.Router();
+const {authenticateUser} = require("../middleware/auth");
 
 // Riya - Search by Name route
 router.get('/search', async (req, res) => {
@@ -39,7 +40,7 @@ router.get('/search', async (req, res) => {
   }
 });
 
-router.get('/results', async (req, res) => {
+router.get('/results', authenticateUser,async (req, res) => {
   try {
     const query = req.query.query; 
     if (!query) {

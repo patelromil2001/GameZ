@@ -17,19 +17,34 @@ body {
 =========================== */
 .sidebar {
   position: fixed;
-  left: 0; 
-  top: 0; 
+  left: 0;
+  top: 0;
   bottom: 0;
   width: 220px;
   background-color: #1e1e2f;
   color: #fff;
   padding: 20px;
+  z-index: 999;
 }
+
+/* Hide sidebar on mobile by default */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+}
+
 .profile-icon {
   font-size: 2rem;
   text-align: center;
   margin-bottom: 20px;
 }
+
 .sidebar nav a,
 .sidebar form button {
   display: block;
@@ -45,6 +60,7 @@ body {
   cursor: pointer;
   transition: background 0.2s;
 }
+
 .sidebar nav a:hover,
 .sidebar form button:hover {
   background-color: #333;
@@ -54,11 +70,19 @@ body {
    MAIN CONTENT
 =========================== */
 .main-content {
-  margin-left: 220px; /* to avoid overlap with the sidebar */
+  margin-left: 220px;
   padding: 40px;
   min-height: 100vh;
   background-color: #fff;
   overflow-y: auto;
+}
+
+/* On mobile, remove left margin */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding: 20px;
+  }
 }
 
 /* ===========================
@@ -139,7 +163,6 @@ body {
   gap: 6px;
 }
 
-/* Regular page links + ellipses + active states */
 .pagination a,
 .pagination span {
   padding: 6px 10px;
@@ -156,32 +179,37 @@ body {
   border-color: #3d7bfd;
 }
 
-/* Current page highlight */
 .pagination .active {
   background-color: #3d7bfd;
   color: #fff;
   border-color: #3d7bfd;
 }
 
-/* Ellipsis style */
 .ellipsis {
   display: inline-block;
 }
 
-.game-card {
-  text-decoration: none;
-  color: inherit;
-  display: block;
-  transition: transform 0.2s ease;
+/* ===========================
+   Hamburger Toggle
+=========================== */
+.mobile-toggle {
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  background: #1e1e2f;
+  color: #fff;
+  border: none;
+  font-size: 1.5rem;
+  padding: 8px 12px;
+  z-index: 1000;
+  cursor: pointer;
+  border-radius: 4px;
 }
 
-.game-card:hover {
-  transform: scale(1.03);
-}
-
-.game-card h3,
-.game-card p {
-  text-align: center;
-  color: #111;
-  text-decoration: none;
+/* Show hamburger only on mobile */
+@media (max-width: 768px) {
+  .mobile-toggle {
+    display: block;
+  }
 }
